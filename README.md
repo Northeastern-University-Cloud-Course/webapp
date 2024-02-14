@@ -8,7 +8,7 @@ This document outlines the prerequisites required for building and deploying a S
 
 ## Prerequisites
 
-Before we begin the local setup of the Spring Boot application, we have to ensure we have the following prerequisites installed and configured on your system:
+Before we begin the local setup of the Spring Boot application, we have to ensure we have the following prerequisites installed and configured on to your system:
 
 ### 1. Java Development Kit (JDK) 21
 
