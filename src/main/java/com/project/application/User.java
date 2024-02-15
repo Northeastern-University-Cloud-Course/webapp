@@ -1,11 +1,9 @@
 package com.project.application;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
-import org.hibernate.annotations.GenericGenerator;
-import org.intellij.lang.annotations.RegExp;
 import jakarta.validation.constraints.Pattern;
+import org.hibernate.annotations.GenericGenerator;
+
 import java.util.Date;
 
 
