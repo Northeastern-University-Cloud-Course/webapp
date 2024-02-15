@@ -31,6 +31,7 @@ public class IntegrationTest {
     public void healthCheckTest() {
         ResponseEntity<String> response = restTemplate.getForEntity(baseUrl + "/healthz", String.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+
     }
 
 }
