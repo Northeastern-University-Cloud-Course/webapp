@@ -48,7 +48,7 @@ jobs:
         run: mvn -B verify
 
       - name: Run Packer init
-        run: packer init packer/
+        run: packer init .
 
       - id: 'auth'
         uses: 'google-github-actions/auth@v2'
