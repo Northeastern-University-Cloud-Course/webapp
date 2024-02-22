@@ -19,15 +19,15 @@ variable "zone" {
 
 # Define the builder for GCP
 source "googlecompute" "test_image" {
-  project_id      = var.project_id
-  zone		  = var.zone
-  source_image    = "centos-stream-8-v20240110"
-  ssh_username    = "root-test"
+  project_id   = var.project_id
+  zone         = var.zone
+  source_image = "centos-stream-8-v20240110"
+  ssh_username = "root-test"
 }
 
 
 build {
-  name    = "test-packer"
+  name = "test-packer"
   sources = [
     "source.googlecompute.test_image"
   ]
@@ -37,15 +37,15 @@ build {
     destination = "/tmp/application-0.0.1-SNAPSHOT.jar"
   }
 
-  provisioner "file"{
-    source = "systemd.service"
+  provisioner "file" {
+    source      = "systemd.service"
     destination = "/tmp/systemd.service"
   }
 
 
   provisioner "shell" {
     inline = [
- 
+
       "sudo yum install unzip -y",
       "sudo cp /tmp/systemd.service /etc/systemd/system/systemd.service",
       "sudo yum install java-17-openjdk -y",
