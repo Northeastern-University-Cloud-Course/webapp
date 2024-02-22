@@ -1,0 +1,60 @@
+name: Integration Tests
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  integration-tests:
+    name: PACKER BUILD
+    runs-on: ubuntu-latest
+
+
+    steps:
+      - name: Install MariaDB
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y mariadb-server
+
+      - name: Start MariaDB Service
+        run: sudo service mariadb start
+
+      - name: Set up MySQL Root Password
+        run: |
+          sudo mysql -u root -e "ALTER USER 'root'@'localhost' IDENTIFIED BY 'Sandeshreddy11#';"
+
+      - uses: actions/checkout@v3
+      - name: Set up JDK
+        uses: actions/setup-java@v2
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Build jar and run Maven
+        run: |
+            mvn install -DskipTests
+
+      - name: check jar
+        run: |
+          cd target 
+          ls 
+
+      - name: Run Integration Tests
+        env:
+          SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/webapp_DB?createDatabaseIfNotExist=true
+          SPRING_DATASOURCE_USERNAME: root
+          SPRING_DATASOURCE_PASSWORD: Sandeshreddy11#
+        run: mvn -B verify
+
+      - name: Run Packer init
+        run: packer init packer/
+
+      - id: 'auth'
+        uses: 'google-github-actions/auth@v2'
+        with:
+          credentials_json: '${{ secrets.GCP_SERVICE_KEY }}'
+
+      - name: Build Packer Image
+        run: |
+          packer build -var 'source_file=./target/application-0.0.1-SNAPSHOT.jar' test.pkr.hcl
