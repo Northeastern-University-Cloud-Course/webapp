@@ -1,0 +1,37 @@
+name: Packer Check
+
+on:
+  pull_request:
+    branches:
+      - main
+
+
+jobs:
+  packer-check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Packer init
+        run: |
+          cd packer 
+          packer init . 
+
+      - name: Packer Format Check
+        run: |
+          for template in $(find . -name '*.hcl'); do
+             packer fmt "$template"
+             if ! git diff --exit-code "$template"; then
+               echo "Packer template $template is not correctly formatted."
+               exit 1
+             fi
+           done
+
+
+      - name: Packer Validate
+        run: |
+          for template in $(find . -name '*.hcl'); do
+            packer validate "$template"
+          done
