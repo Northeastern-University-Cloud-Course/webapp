@@ -1,3 +1,4 @@
+
 packer {
   required_plugins {
     googlecompute = {
@@ -5,6 +6,11 @@ packer {
       source  = "github.com/hashicorp/googlecompute"
     }
   }
+}
+
+variable "source_file" {
+  type    = string
+  default = ""
 }
 
 variable "project_id" {
@@ -33,7 +39,7 @@ build {
   ]
 
   provisioner "file" {
-    source      = "./target/application-0.0.1-SNAPSHOT.jar"
+    source      = "$(var.source_file)"
     destination = "/tmp/application-0.0.1-SNAPSHOT.jar"
   }
 
