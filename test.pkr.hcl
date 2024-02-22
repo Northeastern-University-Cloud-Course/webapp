@@ -39,7 +39,7 @@ build {
   ]
 
   provisioner "file" {
-    source      = "$(var.source_file)"
+    source      = "${var.source_file}"
     destination = "/tmp/application-0.0.1-SNAPSHOT.jar"
   }
 
