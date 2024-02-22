@@ -16,7 +16,6 @@ jobs:
 
       - name: Packer init
         run: |
-          cd packer 
           packer init . 
 
       - name: Packer Format Check
