@@ -15,7 +15,7 @@ variable "source_file" {
 
 variable "project_id" {
   description = "The GCP project ID"
-  default     = "dominica-414822" # Replace "your_project_id_here" with your actual project ID
+  default     = "cloud-dev-415102" # Replace "your_project_id_here" with your actual project ID
 }
 
 variable "zone" {
