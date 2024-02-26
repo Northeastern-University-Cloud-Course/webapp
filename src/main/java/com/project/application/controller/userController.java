@@ -49,6 +49,9 @@ public class userController {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).header("cache-control", "no-cache").build();
             }
 
+            if(ua.getPassword().isEmpty()){
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).header("cache-control", "no-cache").body("Password cannot be empty.");
+            }
             String encodedPassword = passwordEncoder.encode(ua.getPassword());
             ua.setPassword(encodedPassword);
 
@@ -118,6 +121,9 @@ public class userController {
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST).header("cache-control", "no-cache").build();
                 }
 
+                if(ur.getPassword().isEmpty()){
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).header("cache-control", "no-cache").body("Password cannot be empty.");
+                }
                 User user = userOptional.get();
                 user.setFirstname(ur.getFirstname());
                 user.setLastname(ur.getLastname());
