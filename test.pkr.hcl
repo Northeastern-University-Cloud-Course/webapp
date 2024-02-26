@@ -4,7 +4,7 @@ packer {
     googlecompute = {
       version = "~> 1.0"
       source  = "github.com/hashicorp/googlecompute"
-      }
+    }
   }
 }
 
@@ -39,7 +39,7 @@ build {
   ]
 
   provisioner "file" {
-    source      = "${var.source_file}"
+    source      = "${var.sour_file}"
     destination = "/tmp/application-0.0.1-SNAPSHOT.jar"
   }
 
