@@ -4,7 +4,7 @@
 
 ## Introduction
 
-This document outlines the prerequisites required for building and deploying a Spring Boot application, version 3.2.2, using Maven and Java JDK 21. Additionally, this application requires MySQL 8 for database operations.
+This document outlines the prerequisites required for building and deploying a Spring Boot application,version 3.2.2, using Maven and Java JDK 21. Additionally, this application requires MySQL 8 for database operations.
 
 ## Prerequisites
 
