@@ -51,19 +51,14 @@ build {
 
   provisioner "shell" {
     inline = [
-
       "sudo yum install unzip -y",
       "sudo cp /tmp/systemd.service /etc/systemd/system/systemd.service",
       "sudo yum install java-17-openjdk -y",
-      "sudo dnf install mariadb-server -y",
-      "sudo systemctl start mariadb",
-      "sudo mysql -u root -e\"ALTER USER 'root'@'localhost' IDENTIFIED BY 'Sandeshreddy11#';\"",
       "sudo groupadd csye6225",
       "sudo useradd -r  -m -g csye6225 -s /usr/sbin/nologin csye6225",
       "sudo cp /tmp/application-0.0.1-SNAPSHOT.jar /home/csye6225",
       "sudo chown -R csye6225:csye6225 /home/csye6225",
       "sudo systemctl daemon-reload",
-      "sudo systemctl enable mariadb",
       "sudo systemctl enable systemd"
     ]
   }
