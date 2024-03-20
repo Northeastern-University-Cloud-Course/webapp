@@ -50,7 +50,7 @@ build {
 
   provisioner "file" {
     source      = "opsconfig.yml"
-    destination = "/tmp/opsconfig.yml"
+    destination = "/tmp/opsconfig.yaml"
   }
 
 
@@ -58,7 +58,7 @@ build {
     inline = [
       "sudo yum install unzip -y",
       "sudo cp /tmp/systemd.service /etc/systemd/system/systemd.service",
-      "sudo cp /tmp/opsconfig.yml /opt/google-cloud-ops-agent/config.yml",
+      "sudo cp /tmp/opsconfig.yaml /opt/google-cloud-ops-agent/config.yaml",
       "sudo yum install java-17-openjdk -y",
       "sudo groupadd csye6225",
       "sudo useradd -r  -m -g csye6225 -s /usr/sbin/nologin csye6225",
