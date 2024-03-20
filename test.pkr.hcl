@@ -49,9 +49,9 @@ build {
   }
 
   provisioner "file" {
-      source      = "opsconfig.yml"
-      destination = "/tmp/opsconfig.yml"
-    }
+    source      = "opsconfig.yml"
+    destination = "/tmp/opsconfig.yml"
+  }
 
 
   provisioner "shell" {
