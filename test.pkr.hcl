@@ -56,13 +56,13 @@ build {
       "sudo yum install java-17-openjdk -y",
       "sudo groupadd csye6225",
       "sudo useradd -r  -m -g csye6225 -s /usr/sbin/nologin csye6225",
-      "sudo cp /tmp/application-0.0.1-SNAPSHOT.jar /home/csye6225",
-      "sudo chown -R csye6225:csye6225 /home/csye6225",
+      "sudo mkdir -p /opt/your-app",
+      "sudo cp /tmp/application-0.0.1-SNAPSHOT.jar /opt/your-app",
+      "sudo chown -R csye6225:csye6225 /opt/your-app",
       "curl -sSO https://dl.google.com/cloudagents/add-google-cloud-ops-agent-repo.sh",
       "sudo bash add-google-cloud-ops-agent-repo.sh --also-install",
       "sudo systemctl daemon-reload",
-      "sudo systemctl enable systemd",
-      "sudo systemctl restart google-cloud-ops-agent"
+      "sudo systemctl enable systemd"
     ]
   }
 }
