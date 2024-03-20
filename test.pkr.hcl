@@ -48,11 +48,17 @@ build {
     destination = "/tmp/systemd.service"
   }
 
+  provisioner "file" {
+      source      = "opsconfig.yml"
+      destination = "/tmp/opsconfig.yml"
+    }
+
 
   provisioner "shell" {
     inline = [
       "sudo yum install unzip -y",
       "sudo cp /tmp/systemd.service /etc/systemd/system/systemd.service",
+      "sudo cp /tmp/opsconfig.yml /opt/google-cloud-ops-agent/config.yml",
       "sudo yum install java-17-openjdk -y",
       "sudo groupadd csye6225",
       "sudo useradd -r  -m -g csye6225 -s /usr/sbin/nologin csye6225",
