@@ -39,6 +39,10 @@ jobs:
         run: |
           cd target 
           ls 
+      - id: 'auth'
+        uses: 'google-github-actions/auth@v2'
+        with:
+          credentials_json: '${{ secrets.GCP_SERVICE_KEY }}'
 
       - name: Run Integration Tests
         env:
@@ -50,10 +54,7 @@ jobs:
       - name: Run Packer init
         run: packer init .
 
-      - id: 'auth'
-        uses: 'google-github-actions/auth@v2'
-        with:
-          credentials_json: '${{ secrets.GCP_SERVICE_KEY }}'
+
 
       - name: Build Packer Image
         run: |
