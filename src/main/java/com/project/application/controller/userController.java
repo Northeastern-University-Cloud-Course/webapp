@@ -21,6 +21,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import com.google.cloud.pubsub.v1.Publisher;
+import com.google.protobuf.ByteString;
+import com.google.pubsub.v1.ProjectTopicName;
+import com.google.pubsub.v1.PubsubMessage;
+import com.google.gson.Gson;
+
 
 @RestController
 @RequestMapping("/v1")
@@ -59,6 +65,7 @@ public class userController {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
             }
             userRepo.save(ua);
+            publishMessageToPubSub(ua);
 
             Map<String, Object> userResponse = new HashMap<>();
             userResponse.put("username", ua.getUsername());
@@ -72,6 +79,29 @@ public class userController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);
         }
 
+    }
+
+    private void publishMessageToPubSub(User user) {
+        String projectId = "cloud-dev-415102";
+        String topicId = "verify_email";
+        Gson gson = new Gson();
+        String jsonData = gson.toJson(user);
+
+        ProjectTopicName topicName = ProjectTopicName.of(projectId, topicId);
+        Publisher publisher = null;
+
+        try {
+            publisher = Publisher.newBuilder(topicName).build();
+            ByteString data = ByteString.copyFromUtf8(jsonData);
+            PubsubMessage pubsubMessage = PubsubMessage.newBuilder().setData(data).build();
+            publisher.publish(pubsubMessage).get(); // Blocking publish
+        } catch (Exception e) {
+            System.out.println(e);
+        } finally {
+            if (publisher != null) {
+                publisher.shutdown(); // Always shutdown publisher
+            }
+        }
     }
 
     @GetMapping("/user/self")
