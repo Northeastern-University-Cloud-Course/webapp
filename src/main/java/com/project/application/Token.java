@@ -12,9 +12,6 @@ import java.sql.Timestamp;
 public class Token {
 
     @Id
-    @GeneratedValue(generator = "uuid")
-    @GenericGenerator(name = "uuid", strategy = "uuid2")
-    private Long id;
     @Column(name = "email", nullable = false )
     private String email;
     @Column(name = "link", nullable = false )
