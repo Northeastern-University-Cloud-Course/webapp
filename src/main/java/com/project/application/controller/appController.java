@@ -72,7 +72,9 @@ public class appController {
             long curr_time = now.getTime();
 
             if(exp_time-curr_time>0){
+
                 tk.setVerified(true);
+                tokenrepo.save(tk);
                 return ResponseEntity.status(HttpStatus.OK).body("User Verified !!");
             }
             else {
