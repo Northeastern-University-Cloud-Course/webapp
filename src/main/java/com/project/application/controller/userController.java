@@ -1,6 +1,9 @@
 package com.project.application.controller;
 
+import com.google.api.gax.core.FixedCredentialsProvider;
+import com.project.application.Token;
 import com.project.application.User;
+import com.project.application.repositories.TokenVerification;
 import com.project.application.repositories.userRepository;
 import com.project.application.services.healthService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -15,6 +18,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import com.google.auth.oauth2.GoogleCredentials;
+import com.google.cloud.pubsub.v1.Publisher;
+import com.google.pubsub.v1.ProjectTopicName;
+import java.io.FileInputStream;
+import java.io.IOException;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -34,6 +43,9 @@ public class userController {
 
     @Autowired
     private userRepository userRepo;
+
+    @Autowired
+    private TokenVerification tv;
 
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
@@ -64,8 +76,8 @@ public class userController {
             if(userRepo.findByUsername(ua.getUsername()).isPresent()){
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
             }
-            userRepo.save(ua);
             publishMessageToPubSub(ua);
+            userRepo.save(ua);
 
             Map<String, Object> userResponse = new HashMap<>();
             userResponse.put("username", ua.getUsername());
@@ -114,6 +126,14 @@ public class userController {
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
                 Optional<User> userOptional = userRepo.findByUsername(userDetails.getUsername());
 
+                Optional<Token> tok = tv.findById(userDetails.getUsername());
+                if(tok.isEmpty()){
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+                }
+                if(!tok.get().isVerified()){
+                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).header("cache-control", "no-cache").body("Permission denied. User not verified !!");
+                }
+
                 try {
                      User ua = userOptional.get();
                     Map<String, Object> userResponse = new HashMap<>();
@@ -145,6 +165,13 @@ public class userController {
             UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
             Optional<User> userOptional = userRepo.findByUsername(userDetails.getUsername());
 
+            Optional<Token> tok = tv.findById(userDetails.getUsername());
+            if(tok.isEmpty()){
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            }
+            if(!tok.get().isVerified()){
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).header("cache-control", "no-cache").body("Permission denied. User not verified !!");
+            }
 
             try {
                 if(ur.getUsername()!=null || ur.getId()!=null || ur.getAccount_created()!=null || ur.getAccount_updated()!=null){

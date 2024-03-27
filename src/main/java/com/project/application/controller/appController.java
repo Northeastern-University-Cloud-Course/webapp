@@ -61,12 +61,16 @@ public class appController {
 
         try {
             Optional<Token> t = tokenrepo.findByLink(tok);
+            if(t.isEmpty()){
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            }
             Token tk = t.get();
             Timestamp ts = tk.getExptime();
 
             long exp_time = ts.getTime();
             Timestamp now = new Timestamp(System.currentTimeMillis());
             long curr_time = now.getTime();
+
             if(exp_time-curr_time>0){
                 tk.setVerified(true);
                 return ResponseEntity.status(HttpStatus.OK).body("User Verified !!");
@@ -75,7 +79,7 @@ public class appController {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Verification Request timed out. Try again !!");
             }
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e);
         }
     }
 
