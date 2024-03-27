@@ -169,8 +169,10 @@ public class userController {
             if(tok.isEmpty()){
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
             }
-            if(!tok.get().isVerified()) {
-                System.out.println("not verified ");
+
+         
+            if(!tok.get().isVerified()){
+                   System.out.print("not verified");
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).header("cache-control", "no-cache").body("Permission denied. User not verified !!");
             }
 
