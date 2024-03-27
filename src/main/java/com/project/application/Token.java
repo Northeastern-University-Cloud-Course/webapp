@@ -20,14 +20,7 @@ public class Token {
     private Timestamp exptime;
     @Column(name = "verified", nullable = false )
     private boolean verified=false;
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
+    
     public String getEmail() {
         return email;
     }
