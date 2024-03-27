@@ -39,6 +39,7 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(new AntPathRequestMatcher("/v1/user")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/verify")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/healthz")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/error")).permitAll()
 
