@@ -19,8 +19,8 @@ public class Token {
     @Column(name = "exptime", nullable = false )
     private Timestamp exptime;
     @Column(name = "verified", nullable = false )
-    private boolean verified=false;
-    
+    private boolean verified;
+
     public String getEmail() {
         return email;
     }
