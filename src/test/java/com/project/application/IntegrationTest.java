@@ -1,5 +1,6 @@
 package com.project.application;
 
+import com.project.application.repositories.TokenVerification;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -8,6 +9,7 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.*;
 
 import java.nio.charset.StandardCharsets;
+import java.sql.Timestamp;
 import java.util.Base64;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -21,6 +23,9 @@ public class IntegrationTest {
 
     @Autowired
     private TestRestTemplate restTemplate;
+
+    @Autowired
+    private TokenVerification tokenVerification;
 
     private String baseUrl;
 
@@ -50,6 +55,16 @@ public class IntegrationTest {
         return response;
     }
 
+    Token tokenValue(String username){
+        Token token =  new Token();
+        token.setVerified(true);
+        token.setExptime(new Timestamp(System.currentTimeMillis() + 2 * 60 * 1000));
+        token.setEmail(username);
+        token.setLink("abcdef");
+
+        return token;
+    }
+
     @Test
     @Order(2)
     public void createUserTest() {
@@ -59,6 +74,10 @@ public class IntegrationTest {
         newUser.setPassword("pass");
         newUser.setUsername("user@example.com");
         ResponseEntity<User> response = restTemplate.postForEntity(baseUrl + "/v1/user", newUser, User.class);
+        Token token =tokenValue(newUser.getUsername());
+        tokenVerification.save(token);
+        ResponseEntity<Token> tokenResponse = restTemplate.getForEntity(baseUrl+"/verify?token=abcdef", null);
+
         ResponseEntity<User> getresponse = authUser(null, HttpMethod.GET);
                 assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         assertThat(response.getBody()).isNotNull();
@@ -79,6 +98,7 @@ public class IntegrationTest {
         get_user.getBody().setPassword("pass");
 
         ResponseEntity<User> response = authUser(newUser, HttpMethod.PUT);
+
         ResponseEntity<User> get_response = authUser(null, HttpMethod.GET);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
         assertThat(get_response.getBody().getUsername()).isEqualTo(get_user.getBody().getUsername());
