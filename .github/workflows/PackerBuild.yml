@@ -58,39 +58,40 @@ jobs:
 
       - name: Build Packer Image
         run: |
-          packer build -var 'source_file=./target/application-0.0.1-SNAPSHOT.jar' test.pkr.hcl
+          packer build -var 'source_file=./target/application-0.0.1-SNAPSHOT.jar' test.pkr.hcl | tee packer-output.txt
 
-          - name: Extract Image Name
-          run: |
-            cat packer-output.txt | grep 'A disk image was created:' | awk '{print $NF}' > image-name.txt
+      - name: Extract Image Name
+        run: |
+          cat packer-output.txt | grep 'A disk image was created' | awk '{print $NF}' > image-name.txt
   
       - name: Create New Instance Template with Unique Name
         run: |
           TEMPLATE_NAME="new-template-$(date +%s)"
           IMAGE_NAME=$(cat image-name.txt)
           gcloud compute instance-templates create $TEMPLATE_NAME \
-            --project=vakiti-dev \
+            --project=cloud-dev-415102 \
             --machine-type=e2-medium \
             --image=$IMAGE_NAME \
   
       - name: Update Managed Instance Group
         run: |
-          gcloud compute instance-groups managed set-instance-template webapp_manager \
+          gcloud compute instance-groups managed set-instance-template my-instance-group-manager \
             --template=$TEMPLATE_NAME \
-            --project=vakiti-dev
+            --project=cloud-dev-415102 \
+            --region="us-west1"
 
       - name: Start Rolling Update
         run: |
-          gcloud compute instance-groups managed rolling-action start-update webapp_manager \
+          gcloud compute instance-groups managed rolling-action start-update my-instance-group-manager \
             --version template=$TEMPLATE_NAME \
-            --project=vakiti-dev \
-            --zone=us-central1-a
+            --project=cloud-dev-415102 \
+            --zone=us-west1-a
 
       - name: Wait for Rolling Update to Complete
         run: |
-          INSTANCE_GROUP="webapp_manager"
-          ZONE="us-central1-a"
-          PROJECT_ID="vakiti-dev"
+          INSTANCE_GROUP="my-instance-group-manager"
+          ZONE="us-west1-a"
+          PROJECT_ID="cloud-dev-415102"
           UPDATE_FAILED=false
 
           while true; do
