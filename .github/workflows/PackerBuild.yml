@@ -68,6 +68,7 @@ jobs:
         run: |
           TEMPLATE_NAME="new-template-$(date +%s)"
           IMAGE_NAME=$(cat image-name.txt)
+          GROUP_MANG="my-instance-group-manager"
           gcloud compute instance-templates create $TEMPLATE_NAME \
             --project=cloud-dev-415102 \
             --machine-type=e2-medium \
@@ -75,14 +76,14 @@ jobs:
   
       - name: Update Managed Instance Group
         run: |
-          gcloud compute instance-groups managed set-instance-template my-instance-group-manager \
+          gcloud compute instance-groups managed set-instance-template $GROUP_MANG \
             --template=$TEMPLATE_NAME \
             --project=cloud-dev-415102 \
             --region="us-west1"
 
       - name: Start Rolling Update
         run: |
-          gcloud compute instance-groups managed rolling-action start-update my-instance-group-manager \
+          gcloud compute instance-groups managed rolling-action start-update $GROUP_MANG \
             --version template=$TEMPLATE_NAME \
             --project=cloud-dev-415102 \
             --zone=us-west1-a
