@@ -69,11 +69,15 @@ jobs:
           TEMPLATE_NAME="new-template-$(date +%s)"
           echo "TEMPLATE_NAME=$TEMPLATE_NAME" >> $GITHUB_ENV
           IMAGE_NAME=$(cat image-name.txt)
-          SOURCE_IMAGE=${instance-20240226-163431}
+          DISK_NAME="instance-disk"
+          PROJECT="cloud-dev-415102"
+          gcloud config set project $PROJECT
+          output=$(gcloud compute instances list --format="table(name,zone)" | tail -n 1);instance_name=$(echo "$output" | awk '{print $1}');zone=$(echo "$output" | awk '{print $2}');
           gcloud compute instance-templates create $TEMPLATE_NAME \
-            --source-instance=$SOURCE_IMAGE \
-            --configure-disk=device-name=$SOURCE_IMAGE,instantiate-from=image, \
-              image=projects/cloud-dev-415102/global/images/$IMAGE_NAME
+            --source-instance=projects/$PROJECT/zones/$zone/instances/$instance_name \
+            --source-instance-zone=$zone \
+            --instance-template-region=us-west1 \
+            --configure-disk=device-name=$DISK_NAME,instantiate-from=custom-image,custom-image=projects/cloud-dev-415102/global/images/$IMAGE_NAME
   
       - name: Update Managed Instance Group
         run: |
@@ -81,7 +85,7 @@ jobs:
           gcloud compute instance-groups managed set-instance-template $GROUP_MANG \
             --template=$TEMPLATE_NAME \
             --project=cloud-dev-415102 \
-            --region="us-west1" \
+            --region="us-west1" 
 
       - name: Start Rolling Update
         run: |
@@ -89,7 +93,7 @@ jobs:
           gcloud compute instance-groups managed rolling-action start-update $GROUP_MANG \
             --version template=$TEMPLATE_NAME \
             --project=cloud-dev-415102 \
-            --zone=us-west1-a
+            --region=us-west1
 
       - name: Wait for Rolling Update to Complete
         run: |
