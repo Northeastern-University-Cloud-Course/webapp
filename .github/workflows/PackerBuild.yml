@@ -83,7 +83,7 @@ jobs:
         run: |
           GROUP_MANG="my-instance-group-manager"
           gcloud compute instance-groups managed set-instance-template $GROUP_MANG \
-            --template=$TEMPLATE_NAME \
+            --template=projects/cloud-dev-415102/regions/us-west1/instanceTemplates/$TEMPLATE_NAME \
             --project=cloud-dev-415102 \
             --region="us-west1" 
 
@@ -91,26 +91,26 @@ jobs:
         run: |
           GROUP_MANG="my-instance-group-manager"
           gcloud compute instance-groups managed rolling-action start-update $GROUP_MANG \
-            --version template=$TEMPLATE_NAME \
+            --version template=projects/cloud-dev-415102/regions/us-west1/instanceTemplates/$TEMPLATE_NAME \
             --project=cloud-dev-415102 \
             --region=us-west1
 
       - name: Wait for Rolling Update to Complete
         run: |
           INSTANCE_GROUP="my-instance-group-manager"
-          ZONE="us-west1-a"
+          REGION="us-west1"
           PROJECT_ID="cloud-dev-415102"
           UPDATE_FAILED=false
 
           while true; do
             STATUS=$(gcloud compute instance-groups managed describe $INSTANCE_GROUP \
                       --project=$PROJECT_ID \
-                      --zone=$ZONE \
+                      --region=$REGION \
                       --format="value(status.isStable)")
 
             ERRORS=$(gcloud compute instance-groups managed list-errors $INSTANCE_GROUP \
                       --project=$PROJECT_ID \
-                      --zone=$ZONE \
+                      --region=$REGION \
                       --format="value(error.errors[].message)")
 
             if [ "$STATUS" == "True" ]; then
