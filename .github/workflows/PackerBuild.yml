@@ -70,7 +70,7 @@ jobs:
           echo "TEMPLATE_NAME=$TEMPLATE_NAME" >> $GITHUB_ENV
           IMAGE_NAME=$(cat image-name.txt)
           DISK_NAME="instance-disk"
-          PROJECT="cloud-dev-415102"
+          PROJECT=${{ secrets.PROJECT_ID }}
           gcloud config set project $PROJECT
           output=$(gcloud compute instances list --format="table(name,zone)" | tail -n 1);instance_name=$(echo "$output" | awk '{print $1}');zone=$(echo "$output" | awk '{print $2}');
           gcloud compute instance-templates create $TEMPLATE_NAME \
