@@ -22,7 +22,7 @@ jobs:
 
       - name: Set up MySQL Root Password
         run: |
-          sudo mysql -u root -e "ALTER USER 'root'@'localhost' IDENTIFIED BY 'Sandeshreddy11#';"
+          sudo mysql -u root -e "ALTER USER '${{ secrets.DB_USER }}'@'localhost' IDENTIFIED BY '${{ secrets.DB_PASS }}';"
 
       - uses: actions/checkout@v3
       - name: Set up JDK
@@ -46,9 +46,9 @@ jobs:
 
       - name: Run Integration Tests
         env:
-          SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/webapp_DB?createDatabaseIfNotExist=true
-          SPRING_DATASOURCE_USERNAME: root
-          SPRING_DATASOURCE_PASSWORD: Sandeshreddy11#
+          SPRING_DATASOURCE_URL: ${{ secrets.DB_URL }}
+          SPRING_DATASOURCE_USERNAME: ${{ secrets.DB_USER }}
+          SPRING_DATASOURCE_PASSWORD: ${{ secrets.DB_PASS }}
         run: mvn -B verify
 
       - name: Run Packer init
@@ -76,30 +76,30 @@ jobs:
           gcloud compute instance-templates create $TEMPLATE_NAME \
             --source-instance=projects/$PROJECT/zones/$zone/instances/$instance_name \
             --source-instance-zone=$zone \
-            --instance-template-region=us-west1 \
-            --configure-disk=device-name=$DISK_NAME,instantiate-from=custom-image,custom-image=projects/cloud-dev-415102/global/images/$IMAGE_NAME
+            --instance-template-region=${{ secrets.REGION }} \
+            --configure-disk=device-name=$DISK_NAME,instantiate-from=custom-image,custom-image=projects/${{ secrets.PROJECT_ID }}/global/images/$IMAGE_NAME
   
       - name: Update Managed Instance Group
         run: |
-          GROUP_MANG="my-instance-group-manager"
+          GROUP_MANG=${{ secrets.GROUP_MANAGER }}
           gcloud compute instance-groups managed set-instance-template $GROUP_MANG \
-            --template=projects/cloud-dev-415102/regions/us-west1/instanceTemplates/$TEMPLATE_NAME \
-            --project=cloud-dev-415102 \
-            --region="us-west1" 
+            --template=projects/${{ secrets.PROJECT_ID }}/regions/${{ secrets.REGION }}/instanceTemplates/$TEMPLATE_NAME \
+            --project=${{ secrets.PROJECT_ID }} \
+            --region=${{ secrets.REGION }} 
 
       - name: Start Rolling Update
         run: |
-          GROUP_MANG="my-instance-group-manager"
+          GROUP_MANG=${{ secrets.GROUP_MANAGER }}
           gcloud compute instance-groups managed rolling-action start-update $GROUP_MANG \
-            --version template=projects/cloud-dev-415102/regions/us-west1/instanceTemplates/$TEMPLATE_NAME \
-            --project=cloud-dev-415102 \
-            --region=us-west1
+            --version template=projects/${{ secrets.PROJECT_ID }}/regions/${{ secrets.REGION }}/instanceTemplates/$TEMPLATE_NAME \
+            --project=${{ secrets.PROJECT_ID }} \
+            --region=${{ secrets.REGION }}
 
       - name: Wait for Rolling Update to Complete
         run: |
-          INSTANCE_GROUP="my-instance-group-manager"
-          REGION="us-west1"
-          PROJECT_ID="cloud-dev-415102"
+          INSTANCE_GROUP=${{ secrets.GROUP_MANAGER }}
+          REGION=${{ secrets.REGION }}
+          PROJECT_ID=${{ secrets.PROJECT_ID }}
           UPDATE_FAILED=false
 
           while true; do
