@@ -20,7 +20,7 @@ variable "project_id" {
 
 variable "zone" {
   description = "The GCP zone"
-  default     = "northamerica-northeast1-a" # Replace "your_region_here" with your desired GCP region
+  default     = "us-west1-b" # Replace "your_region_here" with your desired GCP region
 }
 
 # Define the builder for GCP
