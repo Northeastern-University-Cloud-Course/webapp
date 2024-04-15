@@ -38,7 +38,7 @@ import com.google.gson.Gson;
 
 
 @RestController
-@RequestMapping("/v1")
+@RequestMapping("/v10")
 public class userController {
 
     @Autowired
