@@ -51,7 +51,7 @@ public class IntegrationTest {
             set("Authorization", authHeader);
         }};
         HttpEntity<User> request = new HttpEntity<>(body, headers);
-        ResponseEntity<User> response = restTemplate.exchange(baseUrl+"/v1/user/self", method, request, User.class);
+        ResponseEntity<User> response = restTemplate.exchange(baseUrl+"/v10/user/self", method, request, User.class);
         return response;
     }
 
@@ -73,7 +73,7 @@ public class IntegrationTest {
         newUser.setLastname("last");
         newUser.setPassword("pass");
         newUser.setUsername("user@example.com");
-        ResponseEntity<User> response = restTemplate.postForEntity(baseUrl + "/v1/user", newUser, User.class);
+        ResponseEntity<User> response = restTemplate.postForEntity(baseUrl + "/v10/user", newUser, User.class);
         Token token =tokenValue(newUser.getUsername());
         tokenVerification.save(token);
         ResponseEntity<Token> tokenResponse = restTemplate.getForEntity(baseUrl+"/verify?token=abcdef", null);
